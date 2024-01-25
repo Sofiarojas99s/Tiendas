@@ -1,0 +1,181 @@
+
+ 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tiendas</title>
+  <style>
+    .store-card {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .store-logo {
+      width: 100px;
+      height: 100px;
+      margin-right: 10px;
+    }
+
+    .store-info {
+      flex-grow: 1;
+    }
+
+    .store-name {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .store-price, .store-status, .store-distance {
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .open {
+      background-color: green;
+      color: white;
+      padding: 5px;
+    }
+
+    .closed {
+      background-color: red;
+      color: white;
+      padding: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div id="store-container"></div>
+
+  <script>
+    // Obtener la ubicación del usuario utilizando geolocalización
+    navigator.geolocation.getCurrentPosition(function(position) {
+      var userLat = position.coords.latitude;
+      var userLng = position.coords.longitude;
+
+      // Calcular la distancia entre el usuario y cada tienda
+      var tiendas = [
+        {
+          nombre: "AT&T",
+          logo: "ruta_del_logo_att",
+          precio: "$10",
+          horarioApertura: 9,
+          horarioCierre: 18,
+          latitud: 40.7128,
+          longitud: -74.0060
+        },
+        {
+          nombre: "Amazon Cash",
+          logo: "ruta_del_logo_amazon",
+          precio: "$15",
+          horarioApertura: 10,
+          horarioCierre: 19,
+          latitud: 41.8781,
+          longitud: -87.6298
+        },
+        {
+          nombre: "Verizon",
+          logo: "ruta_del_logo_verizon",
+          precio: "$20",
+          horarioApertura: 8,
+          horarioCierre: 17,
+          latitud: 42.3601,
+          longitud: -71.0589
+        },
+        {
+          nombre: "Nike",
+          logo: "ruta_del_logo_nike",
+          precio: "$25",
+          horarioApertura: 11,
+          horarioCierre: 20,
+          latitud: 34.0522,
+          longitud: -118.2437
+        },
+        {
+          nombre: "T-Mobile",
+          logo: "ruta_del_logo_tmobile",
+          precio: "$30",
+          horarioApertura: 9,
+          horarioCierre: 18,
+          latitud: 37.7749,
+          longitud: -122.4194
+        }
+      ];
+
+      tiendas.forEach(function(tienda, index) {
+        var distance = calculateDistance(userLat, userLng, tienda.latitud, tienda.longitud);
+
+        // Mostrar la información de la tienda en las tarjetas
+        var storeCard = document.createElement("div");
+        storeCard.classList.add("store-card");
+
+        var logo = document.createElement("img");
+        logo.src = tienda.logo;
+        logo.alt = "Logo de la tienda";
+        logo.classList.add("store-logo");
+        storeCard.appendChild(logo);
+
+        var storeInfo = document.createElement("div");
+        storeInfo.classList.add("store-info");
+
+        var name = document.createElement("h3");
+        name.textContent = tienda.nombre;
+        name.classList.add("store-name");
+        storeInfo.appendChild(name);
+
+        var price = document.createElement("p");
+        price.textContent = "Precio: " + tienda.precio;
+        price.classList.add("store-price");
+        storeInfo.appendChild(price);
+
+        var status = document.createElement("p");
+        var currentHour = new Date().getHours();
+        if (currentHour >= tienda.horarioApertura && currentHour < tienda.horarioCierre) {
+          status.textContent = "Abierto";
+          status.classList.add("store-status", "open");
+        } else {
+          status.textContent = "Cerrado";
+          status.classList.add("store-status", "closed");
+        }
+        storeInfo.appendChild(status);
+
+        var distanceElement = document.createElement("p");
+        distanceElement.textContent = "Distancia: " + distance.toFixed(2) + " km";
+        distanceElement.classList.add("store-distance");
+        storeInfo.appendChild(distanceElement);
+
+        storeCard.appendChild(storeInfo);
+        document.getElementById("store-container").appendChild(storeCard);
+
+        // Agregar línea separadora después de cada tienda, excepto la última
+        if (index < tiendas.length - 1) {
+          var separator = document.createElement("hr");
+          document.getElementById("store-container").appendChild(separator);
+        }
+      });
+    });
+
+    // Función para calcular la distancia entre dos puntos geográficos utilizando la fórmula del haversine
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+      var R = 6371; // Radio de la Tierra en kilómetros
+      var dLat = toRad(lat2 - lat1);
+      var dLon = toRad(lon2 - lon1);
+      var a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      var distance = R * c;
+      return distance;
+    }
+
+    // Función para convertir grados a radianes
+    function toRad(degrees) {
+      return degrees * Math.PI / 180;
+    }
+  </script>
+</body>
+</html>
+ 
